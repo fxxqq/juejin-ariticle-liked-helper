@@ -1,0 +1,22 @@
+{
+  "name": "juejin-ariticle-liked-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:end": "cd backend && node dist/app",
+    "dev:front": "cd frontend &&  "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ru23/juejin-ariticle-liked-helper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ru23/juejin-ariticle-liked-helper/issues"
+  },
+  "homepage": "https://github.com/ru23/juejin-ariticle-liked-helper#readme"
+}

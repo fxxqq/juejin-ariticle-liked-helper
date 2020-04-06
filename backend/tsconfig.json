@@ -1,0 +1,29 @@
+{
+  /* 编译选项 */
+  "compilerOptions": {
+    "target": "es6", // 指定 EECMAScript 的目标版本, 这里我们采用 es6
+    "module": "commonjs", // 指定编译生成哪个模块的系统代码，考虑到兼容性，这里我们设置成 commonjs
+    "outDir": "dist", // 编译输出目录，即 .ts 文件编译成 .js 文件后的输出目录。这里设置为根目录下的 /dist 目录
+    "strict": true, // 严格模式
+    "noImplicitAny": false, // 在表达式和声明上有隐含的 any类型时报错。设为 false 避免当类型推论为 any 时报错
+    "moduleResolution": "node", // 决定如何处理模块。设置为 node
+    "baseUrl": "./", // 定义 ts 项目的根目录，设置 paths 前必须设置
+    //定义路径别名,即当我们通过路径引入一个模块时，可以使用别名来进行引入，这里第一个 * 设置是为了引入第三方模块; 第二个 '@/*' 则是为了直接快捷的导入 /src 下的模块。
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ],
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "esModuleInterop": true // 模块导入方式
+  },
+  "include": [
+    "src"
+  ], // 需要编译的 ts 文件，这里设置为 src 目录下的所有文件
+  "exclude": [
+    "node_modules"
+  ] // 编译需要排除的文件目录
+}

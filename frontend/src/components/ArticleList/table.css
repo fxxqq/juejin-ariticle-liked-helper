@@ -1,0 +1,26 @@
+.ant-table-thead {
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.ant-table-filter-trigger-container svg {
+  color: #eb5424;
+  font-size: 18px;
+}
+
+.ant-table-wrapper {
+  word-break: break-all;
+}
+
+.ant-table-cell, .ant-table-cell .ant-btn span {
+  font-size: 12px;
+}
+
+.ant-table-cell .ant-tag {
+  padding: 0 3px;
+  margin-bottom: 5px;
+}
