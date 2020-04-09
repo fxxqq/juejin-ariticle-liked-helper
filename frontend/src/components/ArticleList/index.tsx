@@ -10,14 +10,14 @@ import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import './table.css';
 import { Article, State, Props, filterDropdownType } from './interface';
-import VirtualTable from './virtualList'
+// import VirtualTable from './virtualList'
 const { Option } = Select;
 
 
 export default class ArticleList extends React.Component<Props, State> {
   state: State = {
     pagination: {
-      position: 'bottom',
+      position: 'topLeft',
       pageSize: 10
     },
     likeList: [],
@@ -98,7 +98,7 @@ export default class ArticleList extends React.Component<Props, State> {
         );
       }
     },
-    render: (text: string) =>
+    render: (text: string, record: Article) =>
       this.state.searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
@@ -107,7 +107,7 @@ export default class ArticleList extends React.Component<Props, State> {
           textToHighlight={text.toString()}
         />
       ) : (
-          text
+          dataIndex === 'title' ? (<a href={record.originalUrl} target="_blank" rel="noopener noreferrer">{text}</a>) : text
         ),
   });
 
@@ -127,12 +127,7 @@ export default class ArticleList extends React.Component<Props, State> {
   };
 
   handleRowSelectionChange () { };
-  handlePaginationChange = (e: any) => {
-    const { value } = e.target;
-    this.setState({
-      pagination: value === 'none' ? false : { position: value },
-    });
-  };
+
   handleSelectChange = (value: string) => {
     if (value) {
       this.setState({
@@ -152,7 +147,6 @@ export default class ArticleList extends React.Component<Props, State> {
         title: '标题',
         dataIndex: 'title',
         key: 'title',
-        render: (text: string, record: Article) => <a href={record.originalUrl} target="_blank" rel="noopener noreferrer">{text}</a>,
         ...this.getColumnSearchProps('title', "标题"),
         width: widthArray[0],
       },
@@ -180,10 +174,10 @@ export default class ArticleList extends React.Component<Props, State> {
 
         render: (tags: any[]) => (
           <span>
-            {tags.map(tag => {
+            {tags.map((tag, index) => {
               return (
-                <Tag color={'volcano'} key={tag.title}>
-                  {tag.title}
+                <Tag color={'volcano'} key={index}>
+                  {tag}
                 </Tag>
               );
             })}
@@ -218,9 +212,12 @@ export default class ArticleList extends React.Component<Props, State> {
         width: widthArray[7],
         render: (text: string, record: Article) =>
           this.state.likeList.length >= 1 ? (
-            <Popconfirm title="确定取消?" onConfirm={() => this.handleDelete(record.objectId)}>
-              <Button>取消赞</Button>
-            </Popconfirm>
+            <div>
+              <Popconfirm title="确定取消?" onConfirm={() => this.handleDelete(record.objectId)}>
+                <Button>取消赞</Button>
+              </Popconfirm>
+            </div>
+
           ) : null,
       },
     ];
@@ -228,51 +225,23 @@ export default class ArticleList extends React.Component<Props, State> {
 
     return (
       <div>
-        <Form
-          layout="inline"
-          className="control-bar"
-          style={{ marginBottom: 16 }}
-        >
-          {/* <Form.Item label="是否开启复选框">
-            <Switch checked={!!rowSelection} onChange={this.handleRowSelectionChange} />
-          </Form.Item> */}
-          <Form.Item label="分页">
-            <Radio.Group
-              value={pagination ? pagination.position : 'none'}
-              onChange={this.handlePaginationChange}
-            >
-              <Radio.Button value="top">顶部</Radio.Button>
-              <Radio.Button value="bottom">底部</Radio.Button>
-              <Radio.Button value="both">上下</Radio.Button>
-              {/* <Radio.Button value="none">不显示</Radio.Button> */}
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item label="每页显示：">
-            <Select defaultValue="10" onChange={this.handleSelectChange}>
-              <Option value="10">10</Option>
-              <Option value="20">20 </Option>
-              <Option value="50">50</Option>
-              <Option value="50">100</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-        {/* <Table
+        <Table
           rowKey={record => record.objectId}
-          // tableLayout="auto"
+          tableLayout="auto"
           columns={columns}
           dataSource={likeList}
           loading={loading}
-          // expandable={{
-          //   expandedRowRender: (record: Article) => <p >
-          //     {record.description}
-          //     <a href={record.originalUrl} rel="noopener noreferrer" target="_blank">阅读全文</a>
-          //   </p>,
-          //   rowExpandable: (record: Article) => record.description !== '没有摘要',
-          // }}
+          expandable={{
+            expandedRowRender: (record: Article) => <p >
+              {record.description}
+              <a href={record.originalUrl} rel="noopener noreferrer" target="_blank">阅读全文</a>
+            </p>,
+            rowExpandable: (record: Article) => record.description !== '没有摘要',
+          }}
           pagination={pagination}
           size="small"
           scroll={{ y: 500 }}
-        /> */}
+        />
 
         {/* <VirtualTable className="virtual-table" columns={columns} dataSource={likeList} scroll={{ y: 500, x: '100vw' }} /> */}
 

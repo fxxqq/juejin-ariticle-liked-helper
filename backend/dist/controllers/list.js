@@ -9,6 +9,10 @@ function handleResult(list) {
     list.map(item => {
         let obj = {};
         const { tags, category, collectionCount, content: description, createdAt, hot, originalUrl, title, user, viewsCount, objectId } = item;
+        tags.map(tagItem => {
+            tagItem = tagItem.title;
+        });
+        console.log(tags);
         const { username: author } = user;
         const { name: type } = category;
         obj = {
