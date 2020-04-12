@@ -12,15 +12,49 @@
   font-size: 18px;
 }
 
+a:active {
+  color: #eb5424 !important;
+}
+
 .ant-table-wrapper {
   word-break: break-all;
 }
 
-.ant-table-cell, .ant-table-cell .ant-btn span {
+.ant-table-cell,
+.ant-table-cell .ant-btn span {
   font-size: 12px;
 }
 
 .ant-table-cell .ant-tag {
   padding: 0 3px;
   margin-bottom: 5px;
+}
+
+.ant-table-column-sorter-up.active,
+.ant-table-column-sorter-down.active {
+  color: #eb5424;
+}
+
+.table-operations {
+  display: flex;
+}
+
+.table-operations .juejin-guide {
+  height: 32px;
+  margin-left: 20px;
+  border: 1px #eee solid;
+}
+
+.ant-table-thead tr th.ant-table-column-has-sorters .ant-table-filter-column {
+  white-space: nowrap;
+}
+
+.ant-table-pagination.ant-pagination {
+  position: relative;
+  z-index: 9999;
+  margin: 5px;
+}
+
+.table-operations .ant-alert-close-icon {
+  top: 15px;
 }

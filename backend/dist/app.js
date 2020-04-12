@@ -15,6 +15,7 @@ const config_1 = require("./config");
 const listController = __importStar(require("./controllers/list"));
 const app = express_1.default();
 app.get('/api/getList/:userId', listController.getLikeList);
+app.get('/api/getArtcileContent/:id', listController.getArtcileContent);
 app.use(function (err, req, res, next) {
     return res.sendStatus(500);
 });

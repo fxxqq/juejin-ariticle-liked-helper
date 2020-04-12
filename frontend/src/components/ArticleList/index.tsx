@@ -1,61 +1,114 @@
 import React from 'react';
 import moment from 'moment'
 import axios from 'axios'
+import { withRouter } from "react-router-dom";
 import {
-  Table, Tag, Button, Input, Form, Radio,
-  Popconfirm, message, Select
+  Table, Tag, Button, Input, message,
+  ConfigProvider, Alert
 } from 'antd';
+
+import zhCN from 'antd/es/locale/zh_CN';
 import { ColumnProps } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import './table.css';
 import { Article, State, Props, filterDropdownType } from './interface';
 // import VirtualTable from './virtualList'
-const { Option } = Select;
+import juejinSite from './juejinsite.jpg'
 
+const { Search } = Input;
+class ArticleList extends React.Component<Props, State> {
 
-export default class ArticleList extends React.Component<Props, State> {
+  _isMounted = false;
   state: State = {
     pagination: {
-      position: 'topLeft',
+      position: ['topRight', "bottomRight"],
       pageSize: 10
     },
     likeList: [],
     searchText: '',
     searchedColumn: '',
     loading: true,
-    // rowSelection: {},
-    scroll: undefined,
-
-    filteredInfo: null,
+    scroll: undefined
   };
   searchInput: any;
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props);
     this.searchInput = null;
   }
   componentDidMount () {
-
     this.getLikeList()
+    this.screenChange()
   }
-  getLikeList () {
-    const { id } = this.props
+  componentWillUnmount () {
+    this._isMounted = false;
+    window.removeEventListener('resize', this.resize);
+  }
+  screenChange () {
+    window.addEventListener('resize', this.resize);
+  }
+
+  resize = () => {
+    console.log(window.innerHeight)
+    let scroll = window.innerHeight - 165
+    console.log(this)
+    this.setState({
+      scroll
+    })
+  }
+  getLikeList = (value?: string) => {
+    this._isMounted = true;
+    console.log(111)
+    let { id } = this.props || ''
+    if (value) {
+      id = value
+    }
     if (id) {
-      axios.get(`/api/getList/${id}`)
-        .then((response) => {
-          // console.log(response.data);
+      localStorage.setItem("userid", id);
+    } else {
+      id = localStorage.getItem("userid") || "57fb24cf816dfa0056c1f8af"
+    }
+    let base = "https://juejin-api.58fe.com"
+    axios.get(`${base}/api/getList/${id}`)
+      .then((response) => {
+        // console.log(response.data);
+        if (this._isMounted) {
           this.setState({
             likeList: response.data,
             loading: false
           })
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-    } else {
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+  }
+  changeUser = (value: string) => {
+    value = value.replace(/\s+/g, "")
+    if (value.length !== 24 || /[^\w]/.test(value)) {
+      message.warning('请输入正确的掘金用户id');
+      return
+    }
 
+    if (value) {
+      this.setState({
+        loading: true
+      }, () => {
+        this.props.history && this.props.history.push(`/${value}`);
+        localStorage.setItem("userid", value);
+        this.getLikeList(value)
+      })
     }
   }
+  //模糊查找
+  // fuzzySearch (selectedKeys: string, dataIndex: string) {
+  //   console.log(selectedKeys, dataIndex, this.state.likeList)
+  //   let { likeList } = this.state
+  //   if (likeList.length) {
+  //     likeList.map(item => {
+  //     })
+  //   }
+  // }
   getColumnSearchProps = (dataIndex: string, type: string) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: filterDropdownType) => (
       <div style={{ padding: 8 }}>
@@ -69,6 +122,15 @@ export default class ArticleList extends React.Component<Props, State> {
           onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
+        {/* <Button
+          type="primary"
+          onClick={() => this.fuzzySearch(selectedKeys, dataIndex)}
+          icon={<SearchOutlined />}
+          size="small"
+          style={{ width: 50, marginRight: 8 }}
+        >
+          模糊查找
+        </Button> */}
         <Button
           type="primary"
           onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
@@ -83,29 +145,33 @@ export default class ArticleList extends React.Component<Props, State> {
         </Button>
       </div>
     ),
-    filterIcon: (filtered: any) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    filterIcon: (filtered: any) => <SearchOutlined style={{ color: filtered ? '#eb5424' : undefined }
+    } />,
     onFilter: (value: any, record: any) =>
       record[dataIndex]
         .toString()
         .toLowerCase()
         .includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: (visible: Boolean) => {
-
       if (visible) {
         setTimeout(() =>
-          // console.log("onFilterDropdownVisibleChange", this)
           this.searchInput.select()
         );
       }
     },
     render: (text: string, record: Article) =>
       this.state.searchedColumn === dataIndex ? (
-        <Highlighter
+        dataIndex === 'title' ? <a href={record.originalUrl} target="_blank" rel="noopener noreferrer">   <Highlighter
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[this.state.searchText]}
           autoEscape
           textToHighlight={text.toString()}
-        />
+        /></a> : <Highlighter
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[this.state.searchText]}
+            autoEscape
+            textToHighlight={text.toString()}
+          />
       ) : (
           dataIndex === 'title' ? (<a href={record.originalUrl} target="_blank" rel="noopener noreferrer">{text}</a>) : text
         ),
@@ -118,30 +184,31 @@ export default class ArticleList extends React.Component<Props, State> {
       searchedColumn: dataIndex,
     });
   };
-  handleDelete = (key: string) => {
-    message.info('开发中...');
-  };
   handleReset = (clearFilters: any) => {
     clearFilters();
     this.setState({ searchText: '' });
   };
-
-  handleRowSelectionChange () { };
-
-  handleSelectChange = (value: string) => {
-    if (value) {
-      this.setState({
-        pagination: { pageSize: value }
-      })
-    }
-  };
-  clearAll = () => {
+  // getArtcileContent = async (id: string) => {
+  //   if (id) {
+  //     axios.get(`api/getArtcileContent/${id}`).then(res => {
+  //       console.log(res.data)
+  //       this.setState({
+  //         artcileContent: res.data
+  //       })
+  //     })
+  //   }
+  // }
+  handleTableChange = (pagination: any, filters: any, sorter: any) => {
     this.setState({
-      filteredInfo: null,
+      pagination,
     });
-  };
+
+  }
+
   render () {
-    let widthArray = ["35%", "8%", "8%", "15%", "10%", "8%", "8%", "8%"]
+    const { likeList, pagination, loading, scroll } = this.state
+
+    let widthArray = ["40%", "10%", "8%", "16%", "8%", "8%", "10%"]
     const columns: ColumnProps<Article>[] = [
       {
         title: '标题',
@@ -185,7 +252,7 @@ export default class ArticleList extends React.Component<Props, State> {
         ),
       },
       {
-        title: '点赞数目',
+        title: '点赞数',
         dataIndex: 'collectionCount',
         key: 'collectionCount',
         width: widthArray[4],
@@ -205,47 +272,56 @@ export default class ArticleList extends React.Component<Props, State> {
         width: widthArray[6],
         render: (Time: string) => <div>{moment(Time).format("YYYY-MM-DD")}</div>,
         sorter: (a: Article, b: Article) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      },
-      {
-        title: '操作',
-        dataIndex: 'operation',
-        width: widthArray[7],
-        render: (text: string, record: Article) =>
-          this.state.likeList.length >= 1 ? (
-            <div>
-              <Popconfirm title="确定取消?" onConfirm={() => this.handleDelete(record.objectId)}>
-                <Button>取消赞</Button>
-              </Popconfirm>
-            </div>
-
-          ) : null,
-      },
+      }
     ];
-    const { likeList, pagination, loading } = this.state
-
     return (
-      <div>
+      <ConfigProvider locale={zhCN}>
+        <Alert message={
+          <div>本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>，如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。</div>} type="success" closable closeText="关闭" />
+        <Alert className="table-operations" message={<div >
+          <Button onClick={() => this.getLikeList} size="small" style={{ width: 90 }}>
+            清除
+          </Button>
+          <Search
+            placeholder="复制你的掘金网站用户Id，粘贴到这里"
+            enterButton="切换用户"
+            size="middle"
+            onSearch={this.changeUser}
+            style={{ width: 400 }}
+          />
+          <img className="juejin-guide" src={juejinSite} alt="juejin-guide" />
+        </div>} type="info" closable closeText="关闭" />
+
         <Table
-          rowKey={record => record.objectId}
+          rowKey={record => record.originalUrl}
           tableLayout="auto"
+          bordered
           columns={columns}
           dataSource={likeList}
           loading={loading}
-          expandable={{
-            expandedRowRender: (record: Article) => <p >
-              {record.description}
-              <a href={record.originalUrl} rel="noopener noreferrer" target="_blank">阅读全文</a>
-            </p>,
-            rowExpandable: (record: Article) => record.description !== '没有摘要',
-          }}
+          // expandable={{
+          //   expandedRowRender: (record: Article,index) => <p>
+          //     <a href={record.originalUrl} rel="noopener noreferrer" target="_blank">阅读原文</a>
+          //   </p>,
+          //   onExpandedRowsChange: (expandedRows) => {
+          //     console.log(expandedRows)
+          //     if (expandedRows.length) {
+          //       // console.log
+          //       // this.getArtcileContent(expandedRows.pop()
+          //       //   .replace("https://juejin.im/post/", ''))
+          //     }
+          //   }
+          // }}
           pagination={pagination}
           size="small"
-          scroll={{ y: 500 }}
+          onChange={this.handleTableChange}
+          scroll={{ y: (window.innerHeight - 165) || scroll }}
         />
 
         {/* <VirtualTable className="virtual-table" columns={columns} dataSource={likeList} scroll={{ y: 500, x: '100vw' }} /> */}
 
-      </div>
+      </ConfigProvider>
     );
   }
 }
+export default withRouter<any, any>(ArticleList);

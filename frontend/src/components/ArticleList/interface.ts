@@ -1,16 +1,17 @@
 import { SpinProps } from 'antd/es/spin';
+import { History } from "history";
 export interface Article {
   title: string;
   author: string;
-  objectId: string;
+  originalUrl: string;
   type: string;
   tags: any[];
   collectionCount: number;
   viewsCount: number;
   createdAt: string;
   description: string,
-  originalUrl: string,
-  filteredValue: Object | undefined
+  filteredValue: Object | undefined,
+
 }
 
 export interface State {
@@ -19,8 +20,7 @@ export interface State {
   searchText: string,
   searchedColumn: string,
   loading: boolean | SpinProps | undefined,
-  scroll: undefined,
-  filteredInfo: null | string[]
+  scroll: undefined | number,
 };
 interface SearchFunc {
   (value: any[]): any[];
@@ -33,5 +33,6 @@ export interface filterDropdownType {
 };
 
 export interface Props {
-  id: string | undefined,
+  id?: string,
+  history?: History,
 };
