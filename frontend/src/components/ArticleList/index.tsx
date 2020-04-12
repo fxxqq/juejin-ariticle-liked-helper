@@ -14,8 +14,8 @@ import Highlighter from 'react-highlight-words';
 import './table.css';
 import { Article, State, Props, filterDropdownType } from './interface';
 // import VirtualTable from './virtualList'
-import juejinSite from './juejinsite.jpg'
-
+// import juejinSite from './juejinsite.jpg'
+let location: Location = window.location
 const { Search } = Input;
 class ArticleList extends React.Component<Props, State> {
 
@@ -69,6 +69,9 @@ class ArticleList extends React.Component<Props, State> {
       id = localStorage.getItem("userid") || "57fb24cf816dfa0056c1f8af"
     }
     let base = "https://juejin-api.58fe.com"
+    if (location.port === '3000') {
+      base = ""
+    }
     axios.get(`${base}/api/getList/${id}`)
       .then((response) => {
         // console.log(response.data);
@@ -85,8 +88,9 @@ class ArticleList extends React.Component<Props, State> {
   }
   changeUser = (value: string) => {
     value = value.replace(/\s+/g, "")
-    if (value.length !== 24 || /[^\w]/.test(value)) {
-      message.warning('请输入正确的掘金用户id');
+    let userId = value.replace('https://juejin.im/user/', "")
+    if (userId.length !== 24 || /[^\w]/.test(value)) {
+      message.warning('请坚持你输入的掘金用户主页是否正确');
       return
     }
 
@@ -276,20 +280,20 @@ class ArticleList extends React.Component<Props, State> {
     ];
     return (
       <ConfigProvider locale={zhCN}>
-        <Alert message={
-          <div>本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>，如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。</div>} type="success" closable closeText="关闭" />
+        <Alert className="table-tip" message={
+          <div><b>复制你的掘金网站用户主页地址，粘贴到下面的输入框。</b>本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>，如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。</div>} type="success" closable closeText="关闭" />
         <Alert className="table-operations" message={<div >
           {/* <Button onClick={() => this.getLikeList} size="small" style={{ width: 90 }}>
             清除
           </Button> */}
           <Search
-            placeholder="复制你的掘金网站用户Id，粘贴到这里"
+            placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
             enterButton="切换用户"
             size="middle"
             onSearch={this.changeUser}
-            style={{ width: 400 }}
+            style={{ width: 500 }}
           />
-          <img className="juejin-guide" src={juejinSite} alt="juejin-guide" />
+
         </div>} type="info" closable closeText="关闭" />
 
         <Table

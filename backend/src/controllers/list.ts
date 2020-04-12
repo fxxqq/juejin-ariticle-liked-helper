@@ -75,7 +75,6 @@ export const getLikeList = (req: Request, res: Response, next: NextFunction) => 
 
 };
 export const getArtcileContent = (req: Request, res: Response, next: NextFunction) => {
-  let result: any = []
   let getArtcileContentRes = res
 
   let { id } = req.params

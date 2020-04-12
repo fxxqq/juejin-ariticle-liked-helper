@@ -58,3 +58,7 @@ a:active {
 .table-operations .ant-alert-close-icon {
   top: 15px;
 }
+
+.table-tip b {
+  color: #eb5424;
+}
