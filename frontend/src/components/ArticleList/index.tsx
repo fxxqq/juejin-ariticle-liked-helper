@@ -279,9 +279,9 @@ class ArticleList extends React.Component<Props, State> {
         <Alert message={
           <div>本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>，如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。</div>} type="success" closable closeText="关闭" />
         <Alert className="table-operations" message={<div >
-          <Button onClick={() => this.getLikeList} size="small" style={{ width: 90 }}>
+          {/* <Button onClick={() => this.getLikeList} size="small" style={{ width: 90 }}>
             清除
-          </Button>
+          </Button> */}
           <Search
             placeholder="复制你的掘金网站用户Id，粘贴到这里"
             enterButton="切换用户"
