@@ -10,8 +10,7 @@ export interface Article {
   viewsCount: number;
   createdAt: string;
   description: string,
-  filteredValue: Object | undefined,
-
+  filteredValue: Object | undefined
 }
 
 export interface State {
@@ -21,6 +20,7 @@ export interface State {
   searchedColumn: string,
   loading: boolean | SpinProps | undefined,
   scroll: undefined | number,
+  isPc: boolean
 };
 interface SearchFunc {
   (value: any[]): any[];

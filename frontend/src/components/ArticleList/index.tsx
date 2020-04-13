@@ -13,27 +13,32 @@ import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import './table.css';
 import { Article, State, Props, filterDropdownType } from './interface';
-// import VirtualTable from './virtualList'
-// import juejinSite from './juejinsite.jpg'
+// import VirtualTable from './virtualList' 
 let location: Location = window.location
+
 const { Search } = Input;
 class ArticleList extends React.Component<Props, State> {
-
+  private box1Ref: React.RefObject<HTMLDivElement>;
+  private box2Ref: React.RefObject<HTMLDivElement>;
   _isMounted = false;
   state: State = {
     pagination: {
-      position: ['topRight', "bottomRight"],
-      pageSize: 10
+      position: ["bottomRight"],
+      pageSize: 20
     },
     likeList: [],
     searchText: '',
     searchedColumn: '',
     loading: true,
-    scroll: undefined
+    scroll: undefined,
+    isPc: false,
+
   };
   searchInput: any;
   constructor(props: Props) {
     super(props);
+    this.box1Ref = React.createRef();
+    this.box2Ref = React.createRef();
     this.searchInput = null;
   }
   componentDidMount () {
@@ -44,26 +49,47 @@ class ArticleList extends React.Component<Props, State> {
     this._isMounted = false;
     window.removeEventListener('resize', this.resize);
   }
+
   screenChange () {
     window.addEventListener('resize', this.resize);
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+
+    } else if (/(Android)/i.test(navigator.userAgent)) {
+
+    } else {
+      this.setState({
+        isPc: true
+      })
+    };
   }
 
   resize = () => {
-    console.log(window.innerHeight)
-    let scroll = window.innerHeight - 165
-    console.log(this)
+    let scroll = window.innerHeight - 168
+    const box1Ref = this.box1Ref.current;
+    const box2Ref = this.box2Ref.current;
+    if (!box1Ref) {
+      scroll = scroll + 22
+    }
+    if (!box2Ref) {
+      scroll = scroll + 32
+    }
+
     this.setState({
       scroll
     })
   }
   getLikeList = (value?: string) => {
     this._isMounted = true;
-    console.log(111)
     let { id } = this.props || ''
     if (value) {
       id = value
     }
     if (id) {
+      if (id.length !== 24 || /[^\w]/.test(id)) {
+        localStorage.removeItem("userid")
+        this.props.history && this.props.history.push(`/`);
+        return
+      }
       localStorage.setItem("userid", id);
     } else {
       id = localStorage.getItem("userid") || "57fb24cf816dfa0056c1f8af"
@@ -72,6 +98,7 @@ class ArticleList extends React.Component<Props, State> {
     if (location.port === '3000') {
       base = ""
     }
+
     axios.get(`${base}/api/getList/${id}`)
       .then((response) => {
         // console.log(response.data);
@@ -88,19 +115,23 @@ class ArticleList extends React.Component<Props, State> {
   }
   changeUser = (value: string) => {
     value = value.replace(/\s+/g, "")
+    if (!value) {
+      message.warning('请复制您的掘金用户主页地址，例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af');
+      return
+    }
     let userId = value.replace('https://juejin.im/user/', "")
-    if (userId.length !== 24 || /[^\w]/.test(value)) {
-      message.warning('请坚持你输入的掘金用户主页是否正确');
+    if (userId.length !== 24 || /[^\w]/.test(userId)) {
+      message.warning('请检查你输入的掘金用户主页是否正确');
       return
     }
 
-    if (value) {
+    if (userId) {
       this.setState({
         loading: true
       }, () => {
-        this.props.history && this.props.history.push(`/${value}`);
-        localStorage.setItem("userid", value);
-        this.getLikeList(value)
+        this.props.history && this.props.history.push(`/${userId}`);
+        localStorage.setItem("userid", userId);
+        this.getLikeList(userId)
       })
     }
   }
@@ -202,15 +233,40 @@ class ArticleList extends React.Component<Props, State> {
   //     })
   //   }
   // }
+  onCloseTip = () => {
+    const box2Ref = this.box2Ref.current;
+    let scroll = window.innerHeight - 110
+    let box2RefHeight = 0
+    if (box2Ref) {
+      box2RefHeight = box2Ref.clientHeight
+    }
+    scroll = scroll - box2RefHeight
+    this.setState({
+      scroll
+    })
+  }
+  onCloseInput = () => {
+    const box1Ref = this.box1Ref.current;
+    let scroll = window.innerHeight - 110
+    let box1RefHeight = 0
+    if (box1Ref) {
+      box1RefHeight = box1Ref.clientHeight
+    }
+
+    scroll = scroll - box1RefHeight
+    this.setState({
+      scroll
+    })
+  }
+
   handleTableChange = (pagination: any, filters: any, sorter: any) => {
     this.setState({
       pagination,
     });
-
   }
 
   render () {
-    const { likeList, pagination, loading, scroll } = this.state
+    const { likeList, pagination, loading, scroll, isPc } = this.state
 
     let widthArray = ["40%", "10%", "8%", "16%", "8%", "8%", "10%"]
     const columns: ColumnProps<Article>[] = [
@@ -280,21 +336,28 @@ class ArticleList extends React.Component<Props, State> {
     ];
     return (
       <ConfigProvider locale={zhCN}>
-        <Alert className="table-tip" message={
-          <div><b>复制你的掘金网站用户主页地址，粘贴到下面的输入框。</b>本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>，如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。</div>} type="success" closable closeText="关闭" />
-        <Alert className="table-operations" message={<div >
-          {/* <Button onClick={() => this.getLikeList} size="small" style={{ width: 90 }}>
-            清除
-          </Button> */}
-          <Search
-            placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
-            enterButton="切换用户"
-            size="middle"
-            onSearch={this.changeUser}
-            style={{ width: 500 }}
-          />
-
-        </div>} type="info" closable closeText="关闭" />
+        <Alert message={
+          <div className="table-tip" ref={this.box1Ref}>
+            <b>复制你的掘金网站用户主页地址，粘贴到下面的输入框。</b>如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。
+           {!isPc && <p> 请复制网站：https://juejin.58fe.com 去pc端可以得到更好的体验</p>}
+          </div>}
+          type="success" closable closeText="关闭" onClose={this.onCloseTip} />
+        <Alert className="table-operations" message={
+          <div ref={this.box2Ref}>
+            {isPc ? <Search
+              placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
+              enterButton="切换用户"
+              size="middle"
+              onSearch={this.changeUser}
+              style={{ width: 500 }}
+            /> : <Search
+                placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
+                enterButton="切换用户"
+                size="middle"
+                onSearch={this.changeUser}
+              />}
+          </div>
+        } type="info" closable closeText="关闭" onClose={this.onCloseInput} />
 
         <Table
           rowKey={record => record.originalUrl}
@@ -319,11 +382,16 @@ class ArticleList extends React.Component<Props, State> {
           pagination={pagination}
           size="small"
           onChange={this.handleTableChange}
-          scroll={{ y: (window.innerHeight - 165) || scroll }}
+          scroll={{ y: scroll || (window.innerHeight - 168) }}
         />
 
         {/* <VirtualTable className="virtual-table" columns={columns} dataSource={likeList} scroll={{ y: 500, x: '100vw' }} /> */}
-
+        <footer>
+          本项目只做学习交流用途，<a rel="noopener noreferrer" href="https://github.com/6fed/juejin-ariticle-liked-helper" target="_blank">点击此处查看源码</a>,服务器搭建在
+          <a rel="noopener noreferrer" href="https://www.aliyun.com/minisite/goods?userCode=jh5fwy2j&share_source=copy_link" target="_blank">
+            阿里云
+          </a>
+        </footer>
       </ConfigProvider>
     );
   }

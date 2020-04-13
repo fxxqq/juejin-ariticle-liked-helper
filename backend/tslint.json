@@ -17,5 +17,8 @@
     "only-arrow-functions": false,
     "no-console": false
   },
-  "rulesDirectory": []
+  "rulesDirectory": [],
+  "files": [
+    "./src/tsd/global.d.ts"
+  ]
 }

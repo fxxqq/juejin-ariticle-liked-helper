@@ -16,6 +16,7 @@ export default class Hello extends Component {
           <Route exact path="/" component={App} />
           <Route path="/:id" component={App} />
         </div>
+
       </Router>
     )
   }

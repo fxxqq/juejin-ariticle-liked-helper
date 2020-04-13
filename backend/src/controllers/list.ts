@@ -4,7 +4,6 @@ let pageSize: number = 30
 //为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
 // import { getUserLikeData } from "../models/List";
 
-
 function handleResult (list: any[]) {
   let newList: any[] = []
   list.map(item => {
