@@ -1,19 +1,15 @@
-FROM node:8.9.4-alpine
+FROM node:latest as build-stage
+RUN echo "-------------------- 后端express项目环境配置 --------------------"
+RUN mkdir -p /usr/src/juejin
 
-RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/juejin
 
-WORKDIR /usr/src/app
-
-COPY package.json /usr/src/app/
+COPY ./backend /usr/src/juejin/
 
 RUN npm i --production
 
-# RUN npm i --production --registry=https://registry.npm.taobao.org
+RUN tsc
 
-COPY . /usr/src/app
+EXPOSE 8001
 
-RUN npm run assets
-
-EXPOSE 7001
-
-CMD npm run docker
+CMD node dist/app
