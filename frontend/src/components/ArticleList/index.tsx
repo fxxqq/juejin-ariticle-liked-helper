@@ -339,7 +339,7 @@ class ArticleList extends React.Component<Props, State> {
         <Alert message={
           <div className="table-tip" ref={this.box1Ref}>
             <b>复制你的掘金网站用户主页地址，粘贴到下面的输入框。</b>如果您觉得对你有帮助，您可以Crtl+D/command+D收藏本网址。
-           {!isPc && <p> 请复制网站：https://juejin.58fe.com 去pc端可以得到更好的体验</p>}
+           {!isPc && <p> 请复制网站地址：https://juejin.58fe.com 去pc端可以得到更好的体验</p>}
           </div>}
           type="success" closable closeText="关闭" onClose={this.onCloseTip} />
         <Alert className="table-operations" message={
