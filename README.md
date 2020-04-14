@@ -33,3 +33,5 @@ docker-compose -version
 
 
 [Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
+
+https://segmentfault.com/a/1190000021008496
