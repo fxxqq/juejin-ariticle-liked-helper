@@ -1,11 +1,8 @@
 FROM node:latest as build-stage
 RUN echo "-------------------- 后端express项目环境配置 --------------------"
-RUN mkdir -p /usr/src/juejin
+RUN mkdir -p /juejin
 
-WORKDIR /usr/src/juejin
-
-COPY ./backend /usr/src/juejin/
-
+WORKDIR /juejin/backend
 RUN npm i --production
 
 RUN tsc
