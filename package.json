@@ -17,5 +17,6 @@
   "bugs": {
     "url": "https://github.com/ru23/juejin-ariticle-liked-helper/issues"
   },
-  "homepage": "https://github.com/ru23/juejin-ariticle-liked-helper#readme"
+  "homepage": "https://github.com/ru23/juejin-ariticle-liked-helper#readme",
+  "dependencies": {}
 }
