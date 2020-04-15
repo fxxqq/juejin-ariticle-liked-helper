@@ -3,11 +3,10 @@
 ### 后端Express项目
 **安装Express**
 ```
-npm install express -s
-```
-由于我们使用到了TypeScript，因此需要继续引入相应的d.ts来识别
-```
-npm install @types/express -s
+npm install -g typescript
+npm install -g tslint
+npm install --save express // 安装普通 express 模块，并在 dependencies 下生成包记录
+npm install --save-dev @types/express // 安装带有声明文件的 express 模块，并在 devDependencies 下生成包记录，仅开发模式下安装。
 ```
 **目录结构**
 ```js
