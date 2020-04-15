@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 const request = require("superagent");
-let pageSize: number = 20;
+let pageSize: number = 30;
 //为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
 // import { getUserLikeData } from "../models/List";
-
-function handleResult(list: any[]) {
+const handleResult = (list: any[]) => {
   let newList: any[] = [];
   list.map((item) => {
     let obj = {};
@@ -13,24 +12,23 @@ function handleResult(list: any[]) {
       category,
       collectionCount,
       createdAt,
-      hot,
       originalUrl,
       title,
       user,
       viewsCount,
     } = item;
-
+    let tagsString = "";
     tags.map((tagItem, index) => {
-      tags[index] = tagItem.title;
+      tagsString += `${tagItem.title}、`;
     });
+    tagsString = tagsString.substr(0, tagsString.length - 1);
     const { username: author } = user;
     const { name: type } = category;
     obj = {
-      tags,
+      tagsString,
       type,
       collectionCount,
       createdAt,
-      hot,
       originalUrl,
       title,
       author,
@@ -40,12 +38,12 @@ function handleResult(list: any[]) {
     newList.push(obj);
   });
   return newList;
-}
-function flatten(arr) {
+};
+const flatten = (arr: any[]) => {
   return arr.reduce((result, item) => {
     return result.concat(Array.isArray(item) ? flatten(item) : item);
   }, []);
-}
+};
 
 export const getLikeList = (
   req: Request,
@@ -66,7 +64,7 @@ export const getLikeList = (
   request
     .get(`${url}?page=0&pageSize=${pageSize}`)
     .set("X-Juejin-Src", "web")
-    .end((err: any, res: any) => {
+    .end((err, res) => {
       if (err) {
         return console.log(err);
       }
@@ -83,7 +81,7 @@ export const getLikeList = (
             request
               .get(`${url}?page=${i}&pageSize=${pageSize}`)
               .set("X-Juejin-Src", "web")
-              .end((err: any, res: any) => {
+              .end((err: Error, res: any) => {
                 if (err) {
                   return console.log(err);
                 }
@@ -95,26 +93,27 @@ export const getLikeList = (
         );
       }
 
-      Promise.all(promiseList).then((rspList: any) => {
+      Promise.all(promiseList).then((rspList) => {
         result = [...entryList, ...flatten(rspList)];
         getLikeListRes.status(200), getLikeListRes.json(result);
       });
     });
 };
-export const getArtcileContent = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  let getArtcileContentRes = res;
+//文章详情，暂时用不到
+// export const getArtcileContent = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   let getArtcileContentRes = res;
 
-  let { id } = req.params;
-  let url = `https://post-storage-api-ms.juejin.im/v1/getDetailData?&src=web&type=entryView&postId=${id}`;
-  request.get(url).end((err: any, res: any) => {
-    if (err) {
-      return console.log(err);
-    }
-    getArtcileContentRes.status(200),
-      getArtcileContentRes.json(res.body.d.content);
-  });
-};
+//   let { id } = req.params;
+//   let url = `https://post-storage-api-ms.juejin.im/v1/getDetailData?&src=web&type=entryView&postId=${id}`;
+//   request.get(url).end((err, res) => {
+//     if (err) {
+//       return console.log(err);
+//     }
+//     getArtcileContentRes.status(200),
+//       getArtcileContentRes.json(res.body.d.content);
+//   });
+// };
