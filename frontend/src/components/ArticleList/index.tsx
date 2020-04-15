@@ -1,16 +1,8 @@
 import React from "react";
-import moment from "moment";
+import dayjs from "dayjs";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
-import {
-  Table,
-  Tag,
-  Button,
-  Input,
-  message,
-  ConfigProvider,
-  Alert,
-} from "antd";
+import { Table, Button, Input, message, ConfigProvider, Alert } from "antd";
 
 import zhCN from "antd/es/locale/zh_CN";
 import { ColumnProps } from "antd/es/table";
@@ -22,6 +14,7 @@ import { Article, State, Props, filterDropdownType } from "./interface";
 let location: Location = window.location;
 
 const { Search } = Input;
+ 
 class ArticleList extends React.Component<Props, State> {
   private box1Ref: React.RefObject<HTMLDivElement>;
   private box2Ref: React.RefObject<HTMLDivElement>;
@@ -29,7 +22,7 @@ class ArticleList extends React.Component<Props, State> {
   state: State = {
     pagination: {
       position: ["bottomRight"],
-      pageSize: 20,
+      pageSize: 50,
     },
     likeList: [],
     searchText: "",
@@ -332,21 +325,10 @@ class ArticleList extends React.Component<Props, State> {
       },
       {
         title: "标签",
-        key: "tags",
-        dataIndex: "tags",
+        key: "tagsString",
+        dataIndex: "tagsString",
         width: widthArray[3],
-
-        render: (tags: any[]) => (
-          <span>
-            {tags.map((tag, index) => {
-              return (
-                <Tag color={"volcano"} key={index}>
-                  {tag}
-                </Tag>
-              );
-            })}
-          </span>
-        ),
+        ...this.getColumnSearchProps("tagsString", "标签"),
       },
       {
         title: "点赞数",
@@ -369,7 +351,12 @@ class ArticleList extends React.Component<Props, State> {
         key: "createdAt",
         width: widthArray[6],
         render: (Time: string) => (
-          <div>{moment(Time).format("YYYY-MM-DD")}</div>
+          
+          <div>
+            {
+              dayjs(Time).format("YYYY-MM-DD")
+            }
+          </div>
         ),
         sorter: (a: Article, b: Article) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),

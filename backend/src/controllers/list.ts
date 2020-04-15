@@ -4,7 +4,7 @@ let pageSize: number = 20;
 //为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
 // import { getUserLikeData } from "../models/List";
 
-function handleResult(list: any[]) {
+const handleResult = (list: any[]) => {
   let newList: any[] = [];
   list.map((item) => {
     let obj = {};
@@ -13,24 +13,23 @@ function handleResult(list: any[]) {
       category,
       collectionCount,
       createdAt,
-      hot,
       originalUrl,
       title,
       user,
       viewsCount,
     } = item;
-
+    let tagsString = "";
     tags.map((tagItem, index) => {
-      tags[index] = tagItem.title;
+      tagsString += `${tagItem.title}、`;
     });
+    tagsString = tagsString.substr(0, tagsString.length - 1);
     const { username: author } = user;
     const { name: type } = category;
     obj = {
-      tags,
+      tagsString,
       type,
       collectionCount,
       createdAt,
-      hot,
       originalUrl,
       title,
       author,
@@ -40,7 +39,7 @@ function handleResult(list: any[]) {
     newList.push(obj);
   });
   return newList;
-}
+};
 function flatten(arr) {
   return arr.reduce((result, item) => {
     return result.concat(Array.isArray(item) ? flatten(item) : item);
