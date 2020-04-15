@@ -38,16 +38,16 @@ class ArticleList extends React.Component<Props, State> {
     this.box2Ref = React.createRef();
     this.searchInput = null;
   }
-  componentDidMount() {
+  componentDidMount () {
     this.getLikeList();
     this.screenChange();
   }
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._isMounted = false;
     window.removeEventListener("resize", this.resize);
   }
 
-  screenChange() {
+  screenChange () {
     window.addEventListener("resize", this.resize);
     if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
     } else if (/(Android)/i.test(navigator.userAgent)) {
@@ -152,22 +152,22 @@ class ArticleList extends React.Component<Props, State> {
       confirm,
       clearFilters,
     }: filterDropdownType) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={(node) => {
-            this.searchInput = node;
-          }}
-          placeholder={`根据关键字查找${type}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() =>
-            this.handleSearch(selectedKeys, confirm, dataIndex)
-          }
-          style={{ width: 188, marginBottom: 8, display: "block" }}
-        />
-        {/* <Button
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={(node) => {
+              this.searchInput = node;
+            }}
+            placeholder={`根据关键字查找${type}`}
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() =>
+              this.handleSearch(selectedKeys, confirm, dataIndex)
+            }
+            style={{ width: 188, marginBottom: 8, display: "block" }}
+          />
+          {/* <Button
           type="primary"
           onClick={() => this.fuzzySearch(selectedKeys, dataIndex)}
           icon={<SearchOutlined />}
@@ -176,24 +176,24 @@ class ArticleList extends React.Component<Props, State> {
         >
           模糊查找
         </Button> */}
-        <Button
-          type="primary"
-          onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          icon={<SearchOutlined />}
-          size="small"
-          style={{ width: 90, marginRight: 8 }}
-        >
-          查找
+          <Button
+            type="primary"
+            onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90, marginRight: 8 }}
+          >
+            查找
         </Button>
-        <Button
-          onClick={() => this.handleReset(clearFilters)}
-          size="small"
-          style={{ width: 90 }}
-        >
-          清除
+          <Button
+            onClick={() => this.handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            清除
         </Button>
-      </div>
-    ),
+        </div>
+      ),
     filterIcon: (filtered: any) => (
       <SearchOutlined style={{ color: filtered ? "#eb5424" : undefined }} />
     ),
@@ -221,20 +221,20 @@ class ArticleList extends React.Component<Props, State> {
             />
           </a>
         ) : (
-          <Highlighter
-            highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-            searchWords={[this.state.searchText]}
-            autoEscape
-            textToHighlight={text.toString()}
-          />
-        )
+            <Highlighter
+              highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+              searchWords={[this.state.searchText]}
+              autoEscape
+              textToHighlight={text.toString()}
+            />
+          )
       ) : dataIndex === "title" ? (
         <a href={record.originalUrl} target="_blank" rel="noopener noreferrer">
           {text}
         </a>
       ) : (
-        text
-      ),
+            text
+          ),
   });
 
   handleSearch = (
@@ -294,7 +294,7 @@ class ArticleList extends React.Component<Props, State> {
     });
   };
 
-  render() {
+  render () {
     const { likeList, pagination, loading, scroll, isPc } = this.state;
 
     let widthArray = ["40%", "10%", "8%", "16%", "8%", "8%", "10%"];
@@ -372,7 +372,7 @@ class ArticleList extends React.Component<Props, State> {
               {!isPc && (
                 <p>
                   {" "}
-                  请复制网站：https://juejin.58fe.com 去pc端可以得到更好的体验
+                  请复制网站地址：https://juejin.58fe.com 去pc端可以得到更好的体验
                 </p>
               )}
             </div>
@@ -395,13 +395,13 @@ class ArticleList extends React.Component<Props, State> {
                   style={{ width: 500 }}
                 />
               ) : (
-                <Search
-                  placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
-                  enterButton="切换用户"
-                  size="middle"
-                  onSearch={this.changeUser}
-                />
-              )}
+                  <Search
+                    placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
+                    enterButton="切换用户"
+                    size="middle"
+                    onSearch={this.changeUser}
+                  />
+                )}
             </div>
           }
           type="info"
