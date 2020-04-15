@@ -2,19 +2,34 @@ import React from "react";
 import dayjs from "dayjs";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
-import { Table, Button, Input, message, ConfigProvider, Alert } from "antd";
+import {
+  Table,
+  Button,
+  Input,
+  message,
+  ConfigProvider,
+  Alert,
+  Modal,
+} from "antd";
 
 import zhCN from "antd/es/locale/zh_CN";
 import { ColumnProps } from "antd/es/table";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import "./table.css";
-import { Article, State, Props, filterDropdownType } from "./interface";
+import {
+  Article,
+  State,
+  Props,
+  filterDropdownType,
+  MyWindow,
+} from "./interface";
 // import VirtualTable from './virtualList'
 let location: Location = window.location;
 
 const { Search } = Input;
-
+declare let window: MyWindow;
+let isLoadPlayer: boolean = false;
 class ArticleList extends React.Component<Props, State> {
   private box1Ref: React.RefObject<HTMLDivElement>;
   private box2Ref: React.RefObject<HTMLDivElement>;
@@ -30,6 +45,7 @@ class ArticleList extends React.Component<Props, State> {
     loading: true,
     scroll: undefined,
     isPc: false,
+    visible: false,
   };
   searchInput: any;
   constructor(props: Props) {
@@ -274,6 +290,11 @@ class ArticleList extends React.Component<Props, State> {
       scroll,
     });
   };
+  handleOk() {
+    window.open(
+      "https://github.com/6fedcom/juejin-ariticle-liked-helper/issues"
+    );
+  }
   onCloseInput = () => {
     const box1Ref = this.box1Ref.current;
     let scroll = window.innerHeight - 114;
@@ -291,6 +312,31 @@ class ArticleList extends React.Component<Props, State> {
   handleTableChange = (pagination: any, filters: any, sorter: any) => {
     this.setState({
       pagination,
+    });
+  };
+  showModal = () => {
+    this.setState(
+      {
+        visible: true,
+      },
+      () => {
+        setTimeout(() => {
+          if (!isLoadPlayer) {
+            window.polyvPlayer({
+              wrap: "#previewArea",
+              width: 600,
+              height: 339,
+              vid: "q7c05c9lc1l14c152m4m8k6cm3n57ck46_7",
+            });
+          }
+          isLoadPlayer = true;
+        });
+      }
+    );
+  };
+  handleSure = () => {
+    this.setState({
+      visible: false,
     });
   };
 
@@ -357,6 +403,22 @@ class ArticleList extends React.Component<Props, State> {
     ];
     return (
       <ConfigProvider locale={zhCN}>
+        <Modal
+          width={650}
+          closable={false}
+          title="操作引导"
+          visible={this.state.visible}
+          footer={[
+            <Button key="back" onClick={this.handleSure}>
+              确认
+            </Button>,
+            <Button key="submit" type="primary" onClick={this.handleOk}>
+              提交意见
+            </Button>,
+          ]}
+        >
+          <div id="previewArea"></div>
+        </Modal>
         <Alert
           message={
             <div className="table-tip" ref={this.box1Ref}>
@@ -380,13 +442,23 @@ class ArticleList extends React.Component<Props, State> {
           message={
             <div ref={this.box2Ref}>
               {isPc ? (
-                <Search
-                  placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
-                  enterButton="切换用户"
-                  size="middle"
-                  onSearch={this.changeUser}
-                  style={{ width: 500 }}
-                />
+                <div>
+                  <Search
+                    placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
+                    enterButton="切换用户"
+                    size="middle"
+                    onSearch={this.changeUser}
+                    style={{ width: 500 }}
+                  />
+                  <Button
+                    style={{ marginLeft: "20px" }}
+                    ghost
+                    type="primary"
+                    onClick={this.showModal}
+                  >
+                    操作引导
+                  </Button>
+                </div>
               ) : (
                 <Search
                   placeholder="例如：https://juejin.im/user/57fb24cf816dfa0056c1f8af"
