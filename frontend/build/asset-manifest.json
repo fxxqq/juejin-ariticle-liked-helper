@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.1d067fae.chunk.css",
-    "main.js": "/static/js/main.82bff528.chunk.js",
-    "runtime-main.js": "/static/js/runtime-main.0020f115.js",
-    "static/css/2.2c1287f6.chunk.css": "/static/css/2.2c1287f6.chunk.css",
-    "static/js/2.191e75c8.chunk.js": "/static/js/2.191e75c8.chunk.js",
-    "index.html": "/index.html",
-    "precache-manifest.56eac0e58d82fdc3e8d2aad66c7aac1e.js": "/precache-manifest.56eac0e58d82fdc3e8d2aad66c7aac1e.js",
-    "service-worker.js": "/service-worker.js",
-    "static/js/2.191e75c8.chunk.js.LICENSE.txt": "/static/js/2.191e75c8.chunk.js.LICENSE.txt"
+    "main.css": "https://cdn.58fe.com/juejin-helper/static/css/main.1d067fae.chunk.css",
+    "main.js": "https://cdn.58fe.com/juejin-helper/static/js/main.6439e823.chunk.js",
+    "runtime-main.js": "https://cdn.58fe.com/juejin-helper/static/js/runtime-main.9fdd6882.js",
+    "static/css/2.2c1287f6.chunk.css": "https://cdn.58fe.com/juejin-helper/static/css/2.2c1287f6.chunk.css",
+    "static/js/2.e424418d.chunk.js": "https://cdn.58fe.com/juejin-helper/static/js/2.e424418d.chunk.js",
+    "index.html": "https://cdn.58fe.com/juejin-helper/index.html",
+    "precache-manifest.142a1c9866c941f1f1e038ead5b25ee9.js": "https://cdn.58fe.com/juejin-helper/precache-manifest.142a1c9866c941f1f1e038ead5b25ee9.js",
+    "service-worker.js": "https://cdn.58fe.com/juejin-helper/service-worker.js",
+    "static/js/2.e424418d.chunk.js.LICENSE.txt": "https://cdn.58fe.com/juejin-helper/static/js/2.e424418d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.0020f115.js",
+    "static/js/runtime-main.9fdd6882.js",
     "static/css/2.2c1287f6.chunk.css",
-    "static/js/2.191e75c8.chunk.js",
+    "static/js/2.e424418d.chunk.js",
     "static/css/main.1d067fae.chunk.css",
-    "static/js/main.82bff528.chunk.js"
+    "static/js/main.6439e823.chunk.js"
   ]
 }
