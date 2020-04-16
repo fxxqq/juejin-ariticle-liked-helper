@@ -1,5 +1,5 @@
 # node镜像
-FROM 58fe/juejin-helper:latest as build-stage
+FROM node:8.9.4-alpine
 
 RUN echo "-------------------- 前端react项目环境配置 --------------------"
 
