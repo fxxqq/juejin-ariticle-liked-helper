@@ -45,6 +45,7 @@ export default app;
     "build": "tsc"
   }
 ```
+
 **用superagent爬取数据**
 [superagent](https://cnodejs.org/topic/5378720ed6e2d16149fa16bd) 是 Node.js 里面一个蛮方便的客户端请求代理模块，用来打请求非常方便。
 ```ts
@@ -95,8 +96,25 @@ export const getLikeList = (
       });
     });
 };
-```
 
+```
+**pm2进程管理工具**
+代码开发完毕要线上运行，并且保证服务稳定性，将使用 PM2 工具。本章讲解 PM2 的配置使用和进程守护，以及 PM2 多进程模型。
+pm2常见指令
+```
+npm install pm2 -g             全局安装 pm2
+pm2 list                       列举所有正在运行的应用
+pm2 start app.js               运行应用
+pm2 stop app_name              停止应用(通过应用名称)
+pm2 stop id                    停止应用(通过应用id)
+pm2 stop all                   停止所有应用
+pm2 restart app_name           重启应用(通过应用名称)
+pm2 restart id                 重启应用(通过应用id)
+pm2 restart all                重启所有应用
+pm2 delete app_name            删除应用(通过应用名称)
+pm2 delete id                  删除应用(通过应用id)
+pm2 delete all                 删除所有应用
+```
 ### 前端项目
 一、 使用 create-react-app 一步步地创建一个 TypeScript 项目，并引入 antd。
 
