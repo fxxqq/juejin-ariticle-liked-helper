@@ -143,6 +143,72 @@ module.exports = override(
    addWebpackPlugin(new AntdDayjsWebpackPlugin())
 );
 ```
+**前端项目cdn配置**
+antd项目更目录下加.env文件,cdn用的是[七牛云](https://portal.qiniu.com/signup?code=1hjz770w7klle)
+```
+PUBLIC_URL = 'http://cdn.58fe.com/juejin-helper/'
+```
+
+### 前端nginx配置
+```nginx
+server {
+  # 80端口是http正常访问的接口
+  listen 80;
+  server_name juejin.58fe.com;
+  # 在这里，我做了https全加密处理，在访问http的时候自动跳转到https
+  rewrite ^(.*) https://$host$1 permanent;
+}
+server {
+    listen 443 ssl;
+    server_name juejin.58fe.com;
+    server_name_in_redirect off;
+    
+    #可以设置独立的ssl认证
+    ssl_certificate /58fe/ssl/juejin/juejin.58fe.com_chain.crt;
+    ssl_certificate_key /58fe/ssl/juejin/juejin.58fe.com_key.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        root  /58fe/juejin-helper/frontend/build;
+        try_files $uri $uri/ /index.html;
+    }
+    # localhost/a 的请求会被均匀分发到myserver
+    location ~ /api/ {
+         # 负载均衡名(用于进行负载均衡的配置)
+        proxy_pass https://juejin-api.58fe.com;
+         # 设置用户真实ip否则获取到的都是nginx服务器的ip
+         proxy_set_header X-real-ip $remote_addr;
+         proxy_set_header Host $http_host;
+    }
+}
+server {
+    listen 443 ssl;
+    server_name juejin-api.58fe.com;
+    server_name_in_redirect off;
+    
+    #可以设置独立的ssl认证
+    ssl_certificate /58fe/ssl/juejin/api/juejin-api.58fe.com_chain.crt;
+    ssl_certificate_key /58fe/ssl/juejin/api/juejin-api.58fe.com_key.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    
+    location / {
+      tcp_nodelay on;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_pass http://127.0.0.1:8001;
+    }
+}
+```
+
 ### 利用docker-compsoe部署前后端分离的项目
 
 1. 安装 Docker 并启动 Docker
@@ -169,7 +235,7 @@ service docker stop
 ```
 curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 
-// 设置权限
+// 授予执行权限
 chmod +x /usr/local/bin/docker-compose
 
 // 安装完查看版本
@@ -187,6 +253,8 @@ EXPOSE：端口
 RUN：
 
 4. 利用docker-compose来部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务
+
+
 
 [Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
 [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
