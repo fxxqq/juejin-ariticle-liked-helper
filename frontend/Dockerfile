@@ -1,12 +1,10 @@
 # node镜像
-FROM node:latest as build-stage
+FROM 58fe/juejin-helper:latest as build-stage
 
 RUN echo "-------------------- 前端react项目环境配置 --------------------"
 
 # 指定接下来的工作路径为/usr/src/juejin - 类似于cd命令
-WORKDIR /usr/src/juejin
-# 拷贝前端项目到juejin目录下
-COPY ./frontend /usr/src/juejin/
+WORKDIR /juejin-helper/
 
 # 设置淘宝npm镜像
 RUN npm install -g cnpm --registry=https://registry.npm.taobao.org

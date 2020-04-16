@@ -143,9 +143,7 @@ module.exports = override(
    addWebpackPlugin(new AntdDayjsWebpackPlugin())
 );
 ```
-### Github + Jenkins + Docker 实现自动化部署
-
-docker-compose来部署前端react项目到Nginx中，和运行后端express项目
+### 利用docker-compsoe部署前后端分离的项目
 
 1. 安装 Docker 并启动 Docker
 ```
@@ -178,6 +176,17 @@ chmod +x /usr/local/bin/docker-compose
 docker-compose -version
 ```
 
+3. 认识一下Dockerfile的指令
+From: 基础镜像
+MAINTAINER：维护者信息
+RUN：执行命令
+ADD： copy 文件
+WORKDIR：类似cd命令，当前工作目录
+VOLUME：目录挂载
+EXPOSE：端口
+RUN：
+
+4. 利用docker-compose来部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务
 
 [Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
 [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
