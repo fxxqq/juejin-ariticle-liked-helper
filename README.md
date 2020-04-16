@@ -48,6 +48,7 @@ export default app;
 **用superagent爬取数据**
 [superagent](https://cnodejs.org/topic/5378720ed6e2d16149fa16bd) 是 Node.js 里面一个蛮方便的客户端请求代理模块，用来打请求非常方便。
 ```ts
+const request = require("superagent");
 export const getLikeList = (
   req: Request,
   res: Response,
