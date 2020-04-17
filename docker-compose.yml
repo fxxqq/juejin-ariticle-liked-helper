@@ -1,7 +1,7 @@
 version: '3'
 services:
-  juejin:
-    image: 58fe/juejin-helper:latest
+  # juejin:
+  #   image: 58fe/juejin-helper:latest
   juejin-web:                                  # 前端web容器(运行nginx中的React项目)
     container_name: juejin-web-container  
     image: nginx  
@@ -17,12 +17,12 @@ services:
   juejin-api:                                  # 后端express容器
     container_name: juejin-api-container  
     restart: always                     # 重启策略: 容器退出时总是重启容器
-    build: ./backend     # 指定设定上下文根目录，然后以该目录为准指定Dockerfile 
+    build: .     # 指定设定上下文根目录，然后以该目录为准指定Dockerfile 
     ports:                              # 映射端口
       - "8001:8001"
-    command:  node /dist/app # 容器创建后执行命令 
-    depends_on:                          # 依赖于api容器，被依赖容器启动后此web容器才可启动
-      - juejin
+    command:  node ./backend/dist/app # 容器创建后执行命令 
+    # depends_on:                          # 依赖于api容器，被依赖容器启动后此web容器才可启动
+    #   - juejin
         
 
  

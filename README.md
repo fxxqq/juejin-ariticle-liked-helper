@@ -99,6 +99,7 @@ export const getLikeList = (
 
 ```
 **pm2进程管理工具**
+
 代码开发完毕要线上运行，并且保证服务稳定性，将使用 PM2 工具。本章讲解 PM2 的配置使用和进程守护，以及 PM2 多进程模型。
 pm2常见指令
 ```
@@ -162,6 +163,7 @@ module.exports = override(
 );
 ```
 **前端项目cdn配置**
+
 antd项目更目录下加.env文件,cdn用的是[七牛云](https://portal.qiniu.com/signup?code=1hjz770w7klle)
 ```
 PUBLIC_URL = 'http://cdn.58fe.com/juejin-helper/'
@@ -261,18 +263,19 @@ docker-compose -version
 ```
 
 3. 认识一下Dockerfile的指令
-From: 基础镜像
-MAINTAINER：维护者信息
-RUN：执行命令
-ADD： copy 文件
-WORKDIR：类似cd命令，当前工作目录
-VOLUME：目录挂载
-EXPOSE：端口
-RUN：
+
+From: 基础镜像<br/>
+MAINTAINER：维护者信息<br/>
+RUN：执行命令<br/>
+ADD： copy 文件<br/>
+WORKDIR：类似cd命令，当前工作目录<br/>
+VOLUME：目录挂载<br/>
+EXPOSE：端口<br/>
+RUN： 启动一个容器、执行命令<br/>
 
 4. 利用docker-compose来部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务
 
 
 
-[Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
-[docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
+1. [Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
+2. [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
