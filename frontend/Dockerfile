@@ -4,7 +4,7 @@ FROM node:8.9.4-alpine
 RUN echo "-------------------- 前端react项目环境配置 --------------------"
 
 # 指定接下来的工作路径为/usr/src/juejin - 类似于cd命令
-WORKDIR /backend
+WORKDIR /juejin-helper/frontend
 
 # 设置淘宝npm镜像
 RUN npm i -g cnpm --registry=https://registry.npm.taobao.org
@@ -18,7 +18,7 @@ RUN cnpm run build
 #CMD ["npm","run","start"]
 
 # 拷贝前端vue项目打包后生成的文件到nginx目录下
-COPY  /backend/build /58fe/juejin-helper
+# COPY  /backend/build /58fe/juejin-helper
 
 # 使用daemon off的方式将nginx运行在前台保证镜像不至于退出
 CMD ["nginx", "-g", "daemon off;"]
