@@ -6,10 +6,10 @@ services:
     container_name: juejin-web-container  
     image: nginx  
     restart: always                     
-    build: ./frontend
+    build: ./
     volumes: 
-      - ./nginx.conf:/etc/nginx/nginx.conf 
-      - ./build:/usr/share/nginx/html/    #挂载项目
+      # - ./nginx.conf:/etc/nginx/nginx.conf 
+      # - ./frontend/build:/58fe/juejin-helper/build    #挂载项目
     ports:
       - "80:80"                      # 映射端口
     depends_on:                          # 依赖于api容器，被依赖容器启动后此web容器才可启动
@@ -17,7 +17,7 @@ services:
   juejin-api:                                  # 后端express容器
     container_name: juejin-api-container  
     restart: always                     # 重启策略: 容器退出时总是重启容器
-    build: .     # 指定设定上下文根目录，然后以该目录为准指定Dockerfile 
+    build: ./backend     # 指定设定上下文根目录，然后以该目录为准指定Dockerfile 
     ports:                              # 映射端口
       - "8001:8001"
     command:  node ./backend/dist/app # 容器创建后执行命令 

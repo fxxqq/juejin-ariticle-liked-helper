@@ -275,7 +275,14 @@ RUN： 启动一个容器、执行命令<br/>
 
 4. 利用docker-compose来部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务
 
+部署后端项目-> npm i && npm run build && node dist/app
+部署前端项目-> npm i && npm run buld  -> COPY到nginx中运行
+通过docker-compose编排一下执行顺序，①后端api容器 ②前端web容器
+docker-compose build  -> 构建镜像
+docker-compose up -d  -> 启动应用服务
 
+![docker部署完成](https://cdn.58fe.com/juejin-helper/docker-images.jpg)
+### 参考文章
 
 1. [Github + Jenkins + Docker 实现自动化部署](https://github.com/mcuking/blog/issues/61)
 2. [docker-compose 部署 Vue+SpringBoot 前后端分离项目](https://segmentfault.com/a/1190000021008496)
