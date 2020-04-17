@@ -1,4 +1,5 @@
-FROM node:8.9.4-alpine
+# 小体积的 node 镜像
+FROM mhart/alpine-node
 RUN echo "-------------------- 后端express项目环境配置 --------------------"
 RUN mkdir -p /58fe/juejin-helper/
 COPY backend /58fe/juejin-helper/

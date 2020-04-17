@@ -273,15 +273,47 @@ docker-compose -version
   EXPOSE：端口<br/>
   RUN： 启动一个容器、执行命令<br/>
 
-4. 利用docker-compose来部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务
+4. Docker Compose
+Docker Compose 是一个工具，这个工具可以通过一个 yml 文件定义多容器的 Docker 应用。通过一条命令就可以根据 yml 文件的定义去创建或者管理多个容器。可以有效的管理命令行创建容器
+利用来docker-compose部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务, Docker Compose 创建容器只需要编写好yml文件，然后执行一行命令就可以。
 
-  部署后端项目-> npm i && npm run build && node dist/app<br/>
-  部署前端项目-> npm i && npm run buld  -> COPY到nginx中运行<br/>
-  通过docker-compose编排一下执行顺序，①后端api容器 ②前端web容器<br/>
-  docker-compose build  -> 构建镜像<br/>
-  docker-compose up -d  -> 启动应用服务<br/>
+5. 在 dockerHub 上授权 github 项目，这样当 github 项目有更新时，会自动执行 Dockerfile 进行构建，并将构建结果保存到 dockerHub 仓库中。
+
+**编写 docker-compose.yml 文件**
+```yml
+version: '3'
+services:
+  # juejin:
+  #   image: 58fe/juejin-helper:latest
+  juejin-web:             # 前端web容器(运行nginx中的React项目)
+    container_name: juejin-web-container  
+    image: nginx  
+    restart: always                     
+    build: ./
+    volumes: 
+      - ./nginx.conf:/etc/nginx/nginx.conf 
+      - ./frontend/build:/58fe/juejin-helper/build    #挂载项目
+    ports:
+      - "80:80"                      # 映射端口
+    depends_on:     # 依赖于api容器，被依赖容器启动后此web容器才可启动
+      - juejin-api
+  juejin-api:                                  # 后端express容器
+    container_name: juejin-api-container  
+    restart: always                     # 重启策略: 容器退出时总是重启容器
+    build: ./backend     # 指定设定上下文根目录，然后以该目录为准指定Dockerfile 
+    ports:                              # 映射端口
+      - "8001:8001"
+    command:  node  dist/app # 容器创建后执行命令 
+```
+
+部署后端项目-> npm i && npm run build && node dist/app<br/>
+部署前端项目-> npm i && npm run buld  -> COPY到nginx中运行<br/>
+通过docker-compose编排一下执行顺序，①后端api容器 ②前端web容器<br/>
+docker-compose build  -> 构建镜像<br/>
+docker-compose up -d  -> 启动应用服务<br/>
 
 ![docker部署完成](https://cdn.58fe.com/juejin-helper/docker-images.jpg)
+
 
 ### 参考文章
 

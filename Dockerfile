@@ -1,5 +1,5 @@
-# node镜像
-FROM node:8.9.4-alpine
+# 小体积的 node 镜像
+FROM mhart/alpine-node
 
 RUN echo "-------------------- 前端react项目环境配置 --------------------"
 

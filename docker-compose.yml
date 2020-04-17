@@ -8,8 +8,8 @@ services:
     restart: always                     
     build: ./
     volumes: 
-      # - ./nginx.conf:/etc/nginx/nginx.conf 
-      # - ./frontend/build:/58fe/juejin-helper/build    #挂载项目
+      - ./nginx.conf:/etc/nginx/nginx.conf 
+      - ./frontend/build:/58fe/juejin-helper/build    #挂载项目
     ports:
       - "80:80"                      # 映射端口
     depends_on:                          # 依赖于api容器，被依赖容器启动后此web容器才可启动
