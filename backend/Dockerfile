@@ -8,8 +8,7 @@ WORKDIR /58fe/juejin-helper/backend
 #   ; rm -rf node_modules \
 #   ; npm config set registry "https://registry.npm.taobao.org/" \
 #   && npm i --production
-RUN npm config set registry "https://registry.npm.taobao.org/" \
-  && npm i --production
+RUN npm i --production
 RUN npm run build
 
 EXPOSE 8001

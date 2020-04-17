@@ -9,8 +9,6 @@ COPY . /58fe/juejin-helper/
 # 指定接下来的工作路径为/usr/src/juejin - 类似于cd命令
 WORKDIR /58fe/juejin-helper/frontend
 
-# 设置淘宝npm镜像
-RUN npm i -g cnpm --registry=https://registry.npm.taobao.org
 # 安装依赖
 RUN cnpm i --production
 
