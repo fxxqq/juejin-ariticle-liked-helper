@@ -10,10 +10,10 @@ COPY . /58fe/juejin-helper/
 WORKDIR /58fe/juejin-helper/frontend
 
 # 安装依赖
-RUN cnpm i --production
+RUN npm i --production
 
 # 打包 - 目的：丢到nginx下跑
-RUN cnpm run build
+RUN npm run build
 
 # 前端项目运行命令
 #CMD ["npm","run","start"]
