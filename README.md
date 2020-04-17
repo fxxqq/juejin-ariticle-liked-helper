@@ -1,14 +1,15 @@
 ![操作引导](https://cdn.58fe.com/juejin/juejin.gif)
 
 ### 后端Express项目
-**安装Express**
+
+##### 安装Express 
 ```
 npm install -g typescript
 npm install -g tslint
 npm install --save express // 安装普通 express 模块，并在 dependencies 下生成包记录
 npm install --save-dev @types/express // 安装带有声明文件的 express 模块，并在 devDependencies 下生成包记录，仅开发模式下安装。
 ```
-**目录结构**
+### 目录结构
 ```js
  ├──backend
        ├──dist
@@ -46,7 +47,7 @@ export default app;
   }
 ```
 
-**用superagent爬取数据**
+##### 用superagent爬取数据
 [superagent](https://cnodejs.org/topic/5378720ed6e2d16149fa16bd) 是 Node.js 里面一个蛮方便的客户端请求代理模块，用来打请求非常方便。
 ```ts
 const request = require("superagent");
@@ -98,7 +99,7 @@ export const getLikeList = (
 };
 
 ```
-**pm2进程管理工具**
+##### pm2进程管理工具
 
 代码开发完毕要线上运行，并且保证服务稳定性，将使用 PM2 工具。本章讲解 PM2 的配置使用和进程守护，以及 PM2 多进程模型。
 pm2常见指令
@@ -117,13 +118,14 @@ pm2 delete id                  删除应用(通过应用id)
 pm2 delete all                 删除所有应用
 ```
 ### 前端项目
-一、 使用 create-react-app 一步步地创建一个 TypeScript 项目，并引入 antd。
+##### 使用 create-react-app 一步步地创建一个 TypeScript 项目，并引入 antd。
 
 ```
 npx create-react-app frontend --template typescript
 cd frontend
 ```
-二、使用 customize-cra 修改React 脚手架配置实践
+##### 使用 customize-cra 修改React 脚手架配置实践
+
 安装 react-app-rewired ,[customize-cra](https://github.com/arackaf/customize-cra)，它提供一些修改 React 脚手架默认配置函数 
 ```
 npm i react-app-rewired customize-cra --save-dev
@@ -162,7 +164,7 @@ module.exports = override(
    addWebpackPlugin(new AntdDayjsWebpackPlugin())
 );
 ```
-**前端项目cdn配置**
+##### 前端项目cdn配置
 
 antd项目更目录下加.env文件,cdn用的是[七牛云](https://portal.qiniu.com/signup?code=1hjz770w7klle)
 ```
@@ -229,9 +231,9 @@ server {
 }
 ```
 
-### 利用docker-compsoe部署前后端分离的项目
+### docker-compose部署
 
-1. 安装 Docker 并启动 Docker
+#####  安装 Docker 并启动 Docker
 ```
 // 更新软件库
 yum update -y
@@ -249,7 +251,7 @@ service docker restart
 service docker stop
 ```
 
-2. 安装 Docker-Compose 编排容器执行顺序，相对于一个一个docker run方式运行项目更方便
+##### Docker部署
 
 // 下载并安装 docker-compose (\可以根据实际情况修改最新版本)
 ```
@@ -262,7 +264,7 @@ chmod +x /usr/local/bin/docker-compose
 docker-compose -version
 ```
 
-3. 认识一下Dockerfile的指令
+##### 认识一下Dockerfile的指令
 
   From: 基础镜像<br/>
   MAINTAINER：维护者信息<br/>
@@ -273,18 +275,16 @@ docker-compose -version
   EXPOSE：端口<br/>
   RUN： 启动一个容器、执行命令<br/>
 
-4. Docker Compose
-Docker Compose 是一个工具，这个工具可以通过一个 yml 文件定义多容器的 Docker 应用。通过一条命令就可以根据 yml 文件的定义去创建或者管理多个容器。可以有效的管理命令行创建容器
-利用来docker-compose部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务, Docker Compose 创建容器只需要编写好yml文件，然后执行一行命令就可以。
+##### Docker Compose
+Docker Compose 是一个工具，可以通过一个yml文件定义多容器的 Docker 应用。
+编排容器执行顺序，通过一条命令就可以根据 yml 文件的定义去创建或者管理多个容器，相对于一个一个docker run方式运行项目，管理和创建容器更方便。
 
-5. 在 dockerHub 上授权 github 项目，这样当 github 项目有更新时，会自动执行 Dockerfile 进行构建，并将构建结果保存到 dockerHub 仓库中。
+利用来docker-compose部署前端react项目的build目录到Nginx中，后端则是一个nodejs服务, Docker Compose 创建容器只需要编写好yml文件，然后执行一行命令就可以。
 
 **编写 docker-compose.yml 文件**
 ```yml
 version: '3'
 services:
-  # juejin:
-  #   image: 58fe/juejin-helper:latest
   juejin-web:             # 前端web容器(运行nginx中的React项目)
     container_name: juejin-web-container  
     image: nginx  
@@ -311,9 +311,13 @@ services:
 通过docker-compose编排一下执行顺序，①后端api容器 ②前端web容器<br/>
 docker-compose build  -> 构建镜像<br/>
 docker-compose up -d  -> 启动应用服务<br/>
+docker-compose down  ->停止服务<br/>
+docker ps -a  ->显示所有的容器<br/>
+docker rm `docker ps -a | grep Exited | awk '{print $1}'` 删除已停止的docker容器 
 
 ![docker部署完成](https://cdn.58fe.com/juejin-helper/docker-images.jpg)
 
+5. 在 dockerHub 上授权 github 项目，这样当 github 项目有更新时，会自动执行 Dockerfile 进行构建，并将构建结果保存到 dockerHub 仓库中。
 
 ### 参考文章
 
