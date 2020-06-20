@@ -1,4 +1,4 @@
-![操作引导](https://cdn.58fe.com/juejin/juejin.gif)
+![操作引导](https://juejin.58fe.com)
 
 ### 后端Express项目
 
