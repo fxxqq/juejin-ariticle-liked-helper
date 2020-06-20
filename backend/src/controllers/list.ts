@@ -1,104 +1,108 @@
-import { Request, Response, NextFunction } from "express";
-const request = require("superagent");
-let pageSize: number = 30;
+import { Request, Response, NextFunction } from 'express'
+const request = require('superagent')
+let pageSize: number = 30
 //为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
 // import { getUserLikeData } from "../models/List";
 const handleResult = (list: any[]) => {
-  let newList: any[] = [];
+  let newList: any[] = []
   list.map((item) => {
-    let obj = {};
-    const {
-      tags,
-      category,
-      collectionCount,
-      createdAt,
-      originalUrl,
-      title,
-      user,
-      viewsCount,
-    } = item;
-    let tagsString = "";
-    tags.map((tagItem, index) => {
-      tagsString += `${tagItem.title}、`;
-    });
-    tagsString = tagsString.substr(0, tagsString.length - 1);
-    const { username: author } = user;
-    const { name: type } = category;
-    obj = {
-      tagsString,
-      type,
-      collectionCount,
-      createdAt,
-      originalUrl,
-      title,
-      author,
-      viewsCount,
-    };
+    console.log('item', item)
 
-    newList.push(obj);
-  });
-  return newList;
-};
+    if (item) {
+      let obj = {}
+      const {
+        tags,
+        category,
+        collectionCount,
+        createdAt,
+        originalUrl,
+        title,
+        user,
+        viewsCount,
+      } = item
+      let tagsString = ''
+      tags.map((tagItem, index) => {
+        tagsString += `${tagItem.title}、`
+      })
+      tagsString = tagsString.substr(0, tagsString.length - 1)
+      const { username: author } = user
+      const { name: type } = category
+      obj = {
+        tagsString,
+        type,
+        collectionCount,
+        createdAt,
+        originalUrl,
+        title,
+        author,
+        viewsCount,
+      }
+
+      newList.push(obj)
+    }
+  })
+  return newList
+}
 const flatten = (arr: any[]) => {
   return arr.reduce((result, item) => {
-    return result.concat(Array.isArray(item) ? flatten(item) : item);
-  }, []);
-};
+    return result.concat(Array.isArray(item) ? flatten(item) : item)
+  }, [])
+}
 
 export const getLikeList = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*')
 
-  if (req.method == "OPTIONS") {
-    res.send(200);
-    /让options请求快速返回/;
+  if (req.method == 'OPTIONS') {
+    res.send(200)
+    ;/让options请求快速返回/
   }
-  let result: any = [];
-  let getLikeListRes = res;
+  let result: any = []
+  let getLikeListRes = res
 
-  let { userId } = req.params;
-  let url = `https://user-like-wrapper-ms.juejin.im/v1/user/${userId}/like/entry`;
+  let { userId } = req.params
+  let url = `https://user-like-wrapper-ms.juejin.im/v1/user/${userId}/like/entry`
   request
     .get(`${url}?page=0&pageSize=${pageSize}`)
-    .set("X-Juejin-Src", "web")
+    .set('X-Juejin-Src', 'web')
     .end((err, res) => {
       if (err) {
-        return console.log(err);
+        return console.log(err)
       }
 
-      let entryList = res.body.d.entryList;
-      const total = res.body.d.total;
-      let pages = Math.ceil(total / pageSize);
-      entryList = handleResult(entryList);
+      let entryList = res.body.d.entryList
+      const total = res.body.d.total
+      let pages = Math.ceil(total / pageSize)
+      entryList = handleResult(entryList)
 
-      let promiseList: any[] = [];
+      let promiseList: any[] = []
       for (let i = 1; i <= pages; i++) {
         promiseList.push(
           new Promise((resolve, reject) => {
             request
               .get(`${url}?page=${i}&pageSize=${pageSize}`)
-              .set("X-Juejin-Src", "web")
+              .set('X-Juejin-Src', 'web')
               .end((err: Error, res: any) => {
                 if (err) {
-                  return console.log(err);
+                  return console.log(err)
                 }
-                let entryList2 = JSON.parse(res.text).d.entryList;
-                entryList2 = handleResult(entryList2);
-                resolve(entryList2);
-              });
+                let entryList2 = JSON.parse(res.text).d.entryList
+                entryList2 = handleResult(entryList2)
+                resolve(entryList2)
+              })
           })
-        );
+        )
       }
 
       Promise.all(promiseList).then((rspList) => {
-        result = [...entryList, ...flatten(rspList)];
-        getLikeListRes.status(200), getLikeListRes.json(result);
-      });
-    });
-};
+        result = [...entryList, ...flatten(rspList)]
+        getLikeListRes.status(200), getLikeListRes.json(result)
+      })
+    })
+}
 //文章详情，暂时用不到
 // export const getArtcileContent = (
 //   req: Request,
