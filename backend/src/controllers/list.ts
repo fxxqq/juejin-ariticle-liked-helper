@@ -1,53 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
 const request = require('superagent')
-let pageSize: number = 30
-//为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
-// import { getUserLikeData } from "../models/List";
-const handleResult = (list: any[]) => {
-  let newList: any[] = []
-  list.map((item) => {
-    console.log('item', item)
-
-    if (item) {
-      let obj = {}
-      const {
-        tags,
-        category,
-        collectionCount,
-        createdAt,
-        originalUrl,
-        title,
-        user,
-        viewsCount,
-      } = item
-      let tagsString = ''
-      tags.map((tagItem, index) => {
-        tagsString += `${tagItem.title}、`
-      })
-      tagsString = tagsString.substr(0, tagsString.length - 1)
-      const { username: author } = user
-      const { name: type } = category
-      obj = {
-        tagsString,
-        type,
-        collectionCount,
-        createdAt,
-        originalUrl,
-        title,
-        author,
-        viewsCount,
-      }
-
-      newList.push(obj)
-    }
-  })
-  return newList
-}
-const flatten = (arr: any[]) => {
-  return arr.reduce((result, item) => {
-    return result.concat(Array.isArray(item) ? flatten(item) : item)
-  }, [])
-}
 
 export const getLikeList = (
   req: Request,
@@ -64,43 +16,25 @@ export const getLikeList = (
   let getLikeListRes = res
 
   let { userId } = req.params
-  let url = `https://user-like-wrapper-ms.juejin.im/v1/user/${userId}/like/entry`
+  let url = `https://apinew.juejin.im/interact_api/v1/digg/query_page`
   request
-    .get(`${url}?page=0&pageSize=${pageSize}`)
-    .set('X-Juejin-Src', 'web')
+    .post(`${url}`)
+    .send({
+      user_id: userId,
+      cursor: '0',
+      item_type: 2,
+      sort_type: 2,
+    })
+    // .set('X-Juejin-Src', 'web')
     .end((err, res) => {
       if (err) {
         return console.log(err)
-      }
-
-      let entryList = res.body.d.entryList
-      const total = res.body.d.total
-      let pages = Math.ceil(total / pageSize)
-      entryList = handleResult(entryList)
-
-      let promiseList: any[] = []
-      for (let i = 1; i <= pages; i++) {
-        promiseList.push(
-          new Promise((resolve, reject) => {
-            request
-              .get(`${url}?page=${i}&pageSize=${pageSize}`)
-              .set('X-Juejin-Src', 'web')
-              .end((err: Error, res: any) => {
-                if (err) {
-                  return console.log(err)
-                }
-                let entryList2 = JSON.parse(res.text).d.entryList
-                entryList2 = handleResult(entryList2)
-                resolve(entryList2)
-              })
-          })
+        console.log(
+          `${url}?user_id=${userId}&cursor=${0}&item_type=2&sort_type=2`
         )
       }
 
-      Promise.all(promiseList).then((rspList) => {
-        result = [...entryList, ...flatten(rspList)]
-        getLikeListRes.status(200), getLikeListRes.json(result)
-      })
+      console.log(res)
     })
 }
 //文章详情，暂时用不到
