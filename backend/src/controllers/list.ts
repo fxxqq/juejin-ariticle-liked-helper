@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 const request = require('superagent')
-
+let cursor: string = '10'
 export const getLikeList = (
   req: Request,
   res: Response,
@@ -17,11 +17,12 @@ export const getLikeList = (
 
   let { userId } = req.params
   let url = `https://apinew.juejin.im/interact_api/v1/digg/query_page`
+  let ret: any[] = []
   request
     .post(`${url}`)
     .send({
       user_id: userId,
-      cursor: '0',
+      cursor,
       item_type: 2,
       sort_type: 2,
     })
@@ -29,14 +30,44 @@ export const getLikeList = (
     .end((err, res) => {
       if (err) {
         return console.log(err)
-        console.log(
-          `${url}?user_id=${userId}&cursor=${0}&item_type=2&sort_type=2`
+      }
+      ret = [...JSON.parse(res.text).data]
+      console.log(JSON.parse(res.text).count)
+      cursor = parseInt(cursor) + 10 + ''
+      let promiseList: any[] = []
+      for (let i = 0; i < parseInt(JSON.parse(res.text).count) / 10; i++) {
+        console.log(i)
+        cursor = parseInt(cursor) + 10 + ''
+        promiseList.push(
+          new Promise((resolve) => {
+            request
+              .post(`${url}`)
+              .send({
+                user_id: userId,
+                cursor,
+                item_type: 2,
+                sort_type: 2,
+              })
+              .end((err, res) => {
+                if (err) {
+                  return console.log(err)
+                }
+                resolve(JSON.parse(res.text).data)
+              })
+          })
         )
       }
 
-      console.log(res)
+      Promise.all(promiseList)
+        .then((result) => {
+          console.log([].concat(...result).length)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     })
 }
+
 //文章详情，暂时用不到
 // export const getArtcileContent = (
 //   req: Request,
