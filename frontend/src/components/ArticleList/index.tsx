@@ -112,7 +112,7 @@ class ArticleList extends React.Component<Props, State> {
     }
 
     axios
-      .get(`${base}/api/getList/${id}`)
+      .get(`${base}/api/v2/getLikeList/${id}`)
       .then((response) => {
         // console.log(response.data);
         if (this._isMounted) {
@@ -225,7 +225,7 @@ class ArticleList extends React.Component<Props, State> {
       this.state.searchedColumn === dataIndex ? (
         dataIndex === 'title' ? (
           <a
-            href={record.originalUrl}
+            href={'https://juejin.im/post/' + record.articleId}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -246,7 +246,11 @@ class ArticleList extends React.Component<Props, State> {
           />
         )
       ) : dataIndex === 'title' ? (
-        <a href={record.originalUrl} target="_blank" rel="noopener noreferrer">
+        <a
+          href={'https://juejin.im/post/' + record.articleId}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {text}
         </a>
       ) : (
@@ -477,7 +481,7 @@ class ArticleList extends React.Component<Props, State> {
         />
         <div style={{ minHeight: window.innerHeight - 100 }}>
           <Table
-            rowKey={(record) => record.originalUrl}
+            rowKey={(record) => record.articleId}
             tableLayout="auto"
             bordered
             columns={columns}
