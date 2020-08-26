@@ -1,100 +1,125 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require('superagent');
-let pageSize = 30;
-//为啥用了async这种方法会导致接口加载的很慢。。。求大神解惑
-// import { getUserLikeData } from "../models/List";
-const handleResult = (list) => {
-    let newList = [];
-    list.map((item) => {
-        console.log('item', item);
-        if (item) {
-            let obj = {};
-            const { tags, category, collectionCount, createdAt, originalUrl, title, user, viewsCount, } = item;
-            let tagsString = '';
-            tags.map((tagItem, index) => {
-                tagsString += `${tagItem.title}、`;
-            });
-            tagsString = tagsString.substr(0, tagsString.length - 1);
-            const { username: author } = user;
-            const { name: type } = category;
-            obj = {
-                tagsString,
-                type,
-                collectionCount,
-                createdAt,
-                originalUrl,
-                title,
-                author,
-                viewsCount,
-            };
-            newList.push(obj);
-        }
-    });
-    return newList;
-};
-const flatten = (arr) => {
-    return arr.reduce((result, item) => {
-        return result.concat(Array.isArray(item) ? flatten(item) : item);
-    }, []);
-};
+let pageSize = 10;
 exports.getLikeList = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     if (req.method == 'OPTIONS') {
         res.send(200);
-        /让options请求快速返回/;
+        // 让options请求快速返回
     }
     let result = [];
     let getLikeListRes = res;
     let { userId } = req.params;
-    let url = `https://user-like-wrapper-ms.juejin.im/v1/user/${userId}/like/entry`;
+    let url = `https://apinew.juejin.im/interact_api/v1/digg/query_page`;
+    let ret = [];
+    let cursor = '10';
     request
-        .get(`${url}?page=0&pageSize=${pageSize}`)
-        .set('X-Juejin-Src', 'web')
+        .post(`${url}`)
+        .send({
+        user_id: userId,
+        cursor,
+        item_type: 2,
+        sort_type: 2,
+    })
         .end((err, res) => {
         if (err) {
             return console.log(err);
         }
-        let entryList = res.body.d.entryList;
-        const total = res.body.d.total;
-        let pages = Math.ceil(total / pageSize);
-        entryList = handleResult(entryList);
+        ret = JSON.parse(res.text).data;
+        // console.log(ret)
         let promiseList = [];
-        for (let i = 1; i <= pages; i++) {
-            promiseList.push(new Promise((resolve, reject) => {
-                request
-                    .get(`${url}?page=${i}&pageSize=${pageSize}`)
-                    .set('X-Juejin-Src', 'web')
-                    .end((err, res) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    let entryList2 = JSON.parse(res.text).d.entryList;
-                    entryList2 = handleResult(entryList2);
-                    resolve(entryList2);
-                });
-            }));
+        let listCount = JSON.parse(res.text).count;
+        for (let i = 0; i < Math.ceil(listCount / pageSize); i++) {
+            cursor = parseInt(cursor) + pageSize + '';
+            if (Number(cursor) < listCount) {
+                promiseList.push(new Promise((resolve) => {
+                    request
+                        .post(`${url}`)
+                        .send({
+                        user_id: userId,
+                        cursor,
+                        item_type: 2,
+                        sort_type: 2,
+                    })
+                        .end((err, res) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        // console.log(JSON.parse(res.text).data)
+                        resolve(JSON.parse(res.text).data);
+                    });
+                }));
+            }
+            else {
+                promiseList.push(new Promise((resolve) => {
+                    request
+                        .post(`${url}`)
+                        .send({
+                        user_id: userId,
+                        cursor: listCount + '',
+                        item_type: 2,
+                        sort_type: 2,
+                    })
+                        .end((err, res) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        resolve(JSON.parse(res.text).data);
+                    });
+                }));
+            }
         }
-        Promise.all(promiseList).then((rspList) => {
-            result = [...entryList, ...flatten(rspList)];
-            getLikeListRes.status(200), getLikeListRes.json(result);
+        Promise.all(promiseList)
+            .then((result) => {
+            if (!result.length) {
+                getLikeListRes.status(200);
+                getLikeListRes.json({
+                    code: 70001,
+                    message: '接口请求超时',
+                });
+            }
+            let likeList = ret.concat(...(result || []));
+            likeList = handle(likeList);
+            getLikeListRes.status(200);
+            getLikeListRes.json(likeList);
+        })
+            .catch((error) => {
+            console.log(error);
         });
     });
 };
-//文章详情，暂时用不到
-// export const getArtcileContent = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   let getArtcileContentRes = res;
-//   let { id } = req.params;
-//   let url = `https://post-storage-api-ms.juejin.im/v1/getDetailData?&src=web&type=entryView&postId=${id}`;
-//   request.get(url).end((err, res) => {
-//     if (err) {
-//       return console.log(err);
-//     }
-//     getArtcileContentRes.status(200),
-//       getArtcileContentRes.json(res.body.d.content);
-//   });
-// };
+function handle(likeList) {
+    let simpleLikeList = [];
+    for (var i = 0; i < likeList.length; i++) {
+        let item = {};
+        if (likeList[i]) {
+            let tags = likeList[i].tags;
+            let tagsString = '';
+            if (tags.length) {
+                tags.map((item) => {
+                    tagsString += item.tag_name;
+                });
+            }
+            let type = likeList[i].category.category_name;
+            let collectionCount = likeList[i].article_info.digg_count;
+            let viewsCount = likeList[i].article_info.view_count;
+            let createdAt = Number(likeList[i].article_info.ctime) * 1000;
+            let articleId = likeList[i].article_id;
+            let title = likeList[i].article_info.title;
+            let author = likeList[i].author_user_info.user_name;
+            item = {
+                articleId,
+                type,
+                collectionCount,
+                createdAt,
+                title,
+                author,
+                viewsCount,
+                tagsString,
+            };
+            simpleLikeList.push(item);
+        }
+    }
+    return simpleLikeList;
+}

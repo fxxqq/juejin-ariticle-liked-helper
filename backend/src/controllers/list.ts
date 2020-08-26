@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 const request = require('superagent')
 let pageSize = 10
-let cursor: string = '10'
+
 export const getLikeList = (
   req: Request,
   res: Response,
@@ -19,6 +19,7 @@ export const getLikeList = (
   let { userId } = req.params
   let url = `https://apinew.juejin.im/interact_api/v1/digg/query_page`
   let ret: any[] = []
+  let cursor: string = '0'
   request
     .post(`${url}`)
     .send({
@@ -36,9 +37,9 @@ export const getLikeList = (
 
       let promiseList: any[] = []
       let listCount = JSON.parse(res.text).count
-      for (let i = 0; i < Math.ceil(listCount) / pageSize; i++) {
+      for (let i = 0; i < Math.ceil(listCount / pageSize); i++) {
         cursor = parseInt(cursor) + pageSize + ''
-        if (Number(cursor) < Number(listCount)) {
+        if (Number(cursor) < listCount) {
           promiseList.push(
             new Promise((resolve) => {
               request
@@ -65,7 +66,7 @@ export const getLikeList = (
                 .post(`${url}`)
                 .send({
                   user_id: userId,
-                  cursor: listCount,
+                  cursor: listCount + '',
                   item_type: 2,
                   sort_type: 2,
                 })
@@ -89,7 +90,8 @@ export const getLikeList = (
               message: '接口请求超时',
             })
           }
-          let likeList: any = ret.concat(...result)
+
+          let likeList: any = ret.concat(...(result || []))
           likeList = handle(likeList)
           getLikeListRes.status(200)
           getLikeListRes.json(likeList)

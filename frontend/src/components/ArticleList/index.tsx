@@ -112,9 +112,20 @@ class ArticleList extends React.Component<Props, State> {
     }
 
     axios
-      .get(`${base}/api/v2/getLikeList/${id}`)
+      .get(`${base}/api/getList/${id}`)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data)
+        localStorage.removeItem('userid')
+        if (response.data.code === 70001) {
+          this.setState({
+            likeList: [],
+            loading: false,
+          })
+          message.warn(
+            '由于掘金改版，所以请在左上方重新输入用户地址，有bug请联系微信：qianduanmi'
+          )
+          return
+        }
         if (this._isMounted) {
           this.setState({
             likeList: response.data,
@@ -122,7 +133,7 @@ class ArticleList extends React.Component<Props, State> {
           })
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error)
       })
   }

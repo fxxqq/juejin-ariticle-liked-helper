@@ -8,7 +8,7 @@ const app: express.Application = express()
 
 // app.get('/api/getList/:userId', listController.getLikeList)
 
-app.get('/api/v2/getLikeList/:userId', listController.getLikeList)
+app.get('/api/getList/:userId', listController.getLikeList)
 
 app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
   return res.sendStatus(500)
